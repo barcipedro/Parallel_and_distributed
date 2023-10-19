@@ -2,10 +2,10 @@
 #include "mpi.h"
 
 int main (int argc,char **argv){
-        int numtasks,rank,rc,dest,source,count,tag=1;
+        int numtasks,rank,dest,source,count,tag=1;
         char inmsg, outmsg='x';
-
         MPI_Status Stat;
+
         MPI_Init(&argc,&argv);
         MPI_Comm_size(MPI_COMM_WORLD,&numtasks);
         MPI_Comm_rank(MPI_COMM_WORLD,&rank);
@@ -14,8 +14,8 @@ int main (int argc,char **argv){
                 source=1;
                 outmsg='x';
 
-        rc=MPI_Send(&outmsg,1, MPI_CHAR, source,tag, MPI_COMM_WORLD);
-        rc=MPI_Recv(&inmsg,1, MPI_CHAR, source,tag, MPI_COMM_WORLD,&Stat);
+        MPI_Send(&outmsg,1, MPI_CHAR, source,tag, MPI_COMM_WORLD);
+        MPI_Recv(&inmsg,1, MPI_CHAR, source,tag, MPI_COMM_WORLD,&Stat);
 
 
         }else{
@@ -24,12 +24,11 @@ int main (int argc,char **argv){
                 source=0;
                 outmsg='y';
 
-        rc=MPI_Send(&outmsg,1, MPI_CHAR, source,tag, MPI_COMM_WORLD);
-        rc=MPI_Recv(&inmsg,1, MPI_CHAR, source,tag, MPI_COMM_WORLD,&Stat);
+        MPI_Recv(&inmsg,1, MPI_CHAR, source,tag, MPI_COMM_WORLD,&Stat);
+        MPI_Send(&outmsg,1, MPI_CHAR, source,tag, MPI_COMM_WORLD);
         }
-        rc=MPI_Get_count(&Stat,MPI_CHAR,&count);
+        }
+        MPI_Get_count(&Stat,MPI_CHAR,&count);
         printf("Task %d: Received %d char(s) from task %d with tag %d outmsg %c inmsg %c \n" , rank,count,Stat.MPI_SOURCE,Stat.MPI_TAG,outmsg,inmsg);
         MPI_Finalize();
         }
-        }
-
